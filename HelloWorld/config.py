@@ -15,6 +15,7 @@ class Config:
     
     def __init__(self):
         configFile = os.environ.get(Constants.CONFIG_PATH_KEY);
+        print(configFile);
         self.properties = {}
         try:
             fopen = open(configFile, 'r')

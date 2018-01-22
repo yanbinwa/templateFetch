@@ -6,6 +6,7 @@ import requests
 import json
 import os
 import HelloWorld.constants as Constants
+import random
 from HelloWorld.config import Config
 
 config = Config();
@@ -82,16 +83,20 @@ def createTemplateData(targetTemplates):
     newTargetTemplates = [];
     videoNameList = readFile();
     for targetTemplate in targetTemplates:
-        for videoName in videoNameList:
+        videoNameListTmp = videoNameList.copy();
+        random.shuffle(videoNameListTmp);
+        videoNameListTmp = videoNameListTmp[0:30];
+        for videoName in videoNameListTmp:
             newTargetTemplates.append(targetTemplate);
             newSentenceCandidates.append(targetTemplate.replace(TEMPLATE_TAG, videoName));
     return (newSentenceCandidates, newTargetTemplates);
-    
+
+#去掉回车符
 def readFile():
     file = open(VIDEO_NAME_FILE, encoding='utf-8');
     videoNameList = [];
     for line in file:
-        videoNameList.append(line);
+        videoNameList.append(line.replace('\n', ''));
     return videoNameList;
     
 if __name__ == "__main__":
