@@ -11,8 +11,8 @@ import xlrd
 import HelloWorld.constants as Constants
 import pickle
 from HelloWorld.config import Config
-import requests
-import json
+#import requests
+#import json
 import jieba
 
 config = Config();
@@ -181,15 +181,15 @@ class TemplateFetchServiceSingleton:
 #         except:
 #             return None;
 
-    def callNlu(self, sentence):
-        params = {
-            'f' : 'synonymSegment',
-            'q' : sentence,
-            'appid' : '5a200ce8e6ec3a6506030e54ac3b970e'
-        }
-        jsonStr = requests.get('http://172.16.101.61:13901/parse', params).text;
-        jsonObj = json.loads(jsonStr);
-        return jsonObj
+#     def callNlu(self, sentence):
+#         params = {
+#             'f' : 'synonymSegment',
+#             'q' : sentence,
+#             'appid' : '5a200ce8e6ec3a6506030e54ac3b970e'
+#         }
+#         jsonStr = requests.get('http://172.16.101.61:13901/parse', params).text;
+#         jsonObj = json.loads(jsonStr);
+#         return jsonObj
     
     def segment(self, sentence):
         try:
