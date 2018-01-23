@@ -19,6 +19,9 @@ VIDEO_LEVEL_INFO = '专有词库>长虹>影视>电影';
 TV_LEVEL_INFO = '专有词库>长虹>影视>电视剧';
 TEMPLATE_TAG = 'XXX';
 
+APPID = config.getProperties(Constants.APPID_KEY);
+NLU_URL = config.getProperties(Constants.NLU_ULR_KEY);
+
 '''
 读取xlsx文件，调用nlu接口，
 当levelInfo为专有词库>长虹>影视>电影 或 专有词库>长虹>影视>电视剧，
@@ -71,9 +74,9 @@ def callNlu(sentence):
     params = {
         'f' : 'synonymSegment',
         'q' : sentence,
-        'appid' : '5a200ce8e6ec3a6506030e54ac3b970e'
+        'appid' : APPID
     }
-    jsonStr = requests.get('http://172.16.101.61:13901/parse', params).text;
+    jsonStr = requests.get(NLU_URL, params).text;
     jsonObj = json.loads(jsonStr);
     return jsonObj
 

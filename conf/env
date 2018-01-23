@@ -1,9 +1,13 @@
-CONFIG_PATH=/usr/src/HelloWorld/conf/env
-TEMPLATE_FILE_DIR=/usr/src/HelloWorld/file
+CONFIG_PATH=/usr/src/template-fetch/conf/env
+TEMPLATE_FILE_DIR=/usr/src/template-fetch/file
 VIDEO_NAME_FILE=videoName.csv
 VIDEO_SENTENCE_FILE=videoTemplate.xlsx
 TEMPLATE_OUTPUT_FILE=templateOutput.xls
-JAVA_JAR_LIB_DIR=/usr/src/HelloWorld/lib
+JAVA_JAR_LIB_DIR=/usr/src/template-fetch/lib
 HANLP_JAR=hanlp-portable-1.3.4.jar
 TRAIN_MODEL_FILE=train_model.m
 INDEX_TO_TEMPLATE_FILE=filename.json
+APPID=5a200ce8e6ec3a6506030e54ac3b970e
+NLU_URL=http://172.16.101.61:13901/parse
+TEST_INPUT_FILE=log.xlsx
+TEST_OUTPUT_FILE=output.xls

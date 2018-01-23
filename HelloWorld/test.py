@@ -9,7 +9,10 @@ from HelloWorld.config import Config
 config = Config();
 TEMPLATE_FILE_DIR = config.getProperties(Constants.TEMPLATE_FILE_DIR_KEY) + '/'; 
 TEMPLATE_OUTPUT_FILE = TEMPLATE_FILE_DIR + config.getProperties(Constants.TEMPLATE_OUTPUT_FILE_KEY);
-
+APPID = config.getProperties(Constants.APPID_KEY);
+NLU_URL = config.getProperties(Constants.NLU_ULR_KEY);
+TEST_INPUT_FILE = TEMPLATE_FILE_DIR + config.getProperties(Constants.TEST_INPUT_FILE_KEY);
+TEST_OUTPUT_FILE = TEMPLATE_FILE_DIR + config.getProperties(Constants.TEST_OUTPUT_FILE_KEY);
 
 class Test:
     
@@ -63,7 +66,7 @@ class Test:
             worksheet.write(i, 2, name);
             worksheet.write(i, 3, newName);
             worksheet.write(i, 4, tag);
-        workbook.save('/Users/emotibot/Documents/workspace/other/HelloWorld/file/output.xls');
+        workbook.save(TEST_OUTPUT_FILE);
     
     #需要调用nlu，确保name是在词库中的    
     def createTestLog(self, fileName):
@@ -106,7 +109,7 @@ class Test:
             
             worksheet.write(i, 0, name);   
             worksheet.write(i, 1, sentence);
-        workbook.save('/Users/emotibot/Documents/workspace/other/HelloWorld/file/output.xls');
+        workbook.save(TEST_OUTPUT_FILE);
                 
     def getName(self, result):
         if result is None or result == '':
@@ -118,12 +121,12 @@ class Test:
         params = {
             'f' : 'synonymSegment',
             'q' : sentence,
-            'appid' : '5a200ce8e6ec3a6506030e54ac3b970e'
+            'appid' : APPID
         }
-        jsonStr = requests.get('http://172.16.101.61:13901/parse', params).text;
+        jsonStr = requests.get(NLU_URL, params).text;
         jsonObj = json.loads(jsonStr);
         return jsonObj
         
 if __name__ == "__main__":
     test = Test();
-    test.createTestLog("/Users/emotibot/Documents/workspace/other/HelloWorld/file/log.xlsx");
+    test.createTestLog(TEST_INPUT_FILE);
