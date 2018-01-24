@@ -72,7 +72,7 @@ def buildTemplateDataFile(sentenceFile):
 
 def callNlu(sentence):
     params = {
-        'f' : 'synonymSegment',
+        'f' : 'synonymSegment,namedEntities',
         'q' : sentence,
         'appid' : APPID
     }

@@ -69,6 +69,49 @@ class Test:
         workbook.save(TEST_OUTPUT_FILE);
     
     #需要调用nlu，确保name是在词库中的    
+#     def createTestLog(self, fileName):
+#         data = xlrd.open_workbook(fileName);
+#         table = data.sheet_by_index(0);
+#         names = [];
+#         sentences = [];
+#         for i in range(1, table.nrows):
+#             domain = table.cell(i, 2).value;
+#             intent = table.cell(i, 3).value;
+#             if domain != 'VIDEO' or intent != 'QUERY':
+#                 continue;
+#             result = table.cell(i, 4).value;
+#             name = self.getName(result);
+#             if name is None:
+#                 continue;
+#             sentence = table.cell(i, 5).value;
+#             #对sentence调用nlu，判断name是属于nud的
+#             jsonObj = self.callNlu(sentence);
+#             if jsonObj is None or len(jsonObj) == 0:
+#                 continue;
+#             synonymSegments = jsonObj[0].get('synonymSegment') if 'synonymSegment' in jsonObj[0] else '';
+#             if synonymSegments == '':
+#                 continue;
+#             tag = False;
+#             for segment in synonymSegments:
+#                 if segment['orgWord'] == name and segment['pos'] == 'nud':
+#                     tag = True;
+#                     break;
+#             
+#             if tag:
+#                 names.append(name);
+#                 sentences.append(sentence);
+#         
+#         workbook = xlwt.Workbook(encoding = 'utf-8');
+#         worksheet = workbook.add_sheet('template', cell_overwrite_ok = True);
+#         for i in range(len(names)):
+#             sentence = sentences[i];
+#             name = names[i];
+#             
+#             worksheet.write(i, 0, name);   
+#             worksheet.write(i, 1, sentence);
+#         workbook.save(TEST_OUTPUT_FILE);
+        
+    #需要调用nlu，确保name是在词库中的    
     def createTestLog(self, fileName):
         data = xlrd.open_workbook(fileName);
         table = data.sheet_by_index(0);
@@ -88,16 +131,17 @@ class Test:
             jsonObj = self.callNlu(sentence);
             if jsonObj is None or len(jsonObj) == 0:
                 continue;
-            synonymSegments = jsonObj[0].get('synonymSegment') if 'synonymSegment' in jsonObj[0] else '';
-            if synonymSegments == '':
+            nameEntities = jsonObj[0].get('namedEntities') if 'namedEntities' in jsonObj[0] else '';
+            if nameEntities == '':
                 continue;
-            tag = False;
-            for segment in synonymSegments:
-                if segment['orgWord'] == name and segment['pos'] == 'nud':
-                    tag = True;
-                    break;
-            
-            if tag:
+            startIndex = nameEntities.index('<START:MOVIE>') if '<START:MOVIE>' in nameEntities else -1;
+            if (startIndex < 0):
+                continue;
+            endIndex = nameEntities.index('<END>');
+            if (endIndex < 0):
+                continue;
+            nameTmp = nameEntities[startIndex + len('<START:MOVIE>'): endIndex];
+            if nameTmp == name:
                 names.append(name);
                 sentences.append(sentence);
         
@@ -119,7 +163,7 @@ class Test:
     
     def callNlu(self, sentence):
         params = {
-            'f' : 'synonymSegment',
+            'f' : 'synonymSegment,namedEntities',
             'q' : sentence,
             'appid' : APPID
         }

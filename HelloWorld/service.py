@@ -119,7 +119,7 @@ class TemplateFetchServiceSingleton:
         for (index, rate) in sorted(indexToRateMap.items(), key = lambda x : x[1], reverse = True):
             candidateItem.append((self.indexToTemplate[index], rate))
             count += 1;
-            if count >= 10:
+            if count >= 20:
                 break;
         
         ret = {};
@@ -230,11 +230,11 @@ class TemplateFetchServiceSingleton:
             os.remove(fileName);
 
 if __name__ == "__main__":
-    #test = TemplateFetchServiceSingleton();
-    #test.trainModelFromFile(TEMPLATE_OUTPUT_FILE);
-    #test.storeTrainModel();
-    
     test = TemplateFetchServiceSingleton();
-    test.uploadTrainModel();
-    ret = test.fetchTemplate('大话西游帮我放');
-    print(ret);
+    test.trainModelFromFile(TEMPLATE_OUTPUT_FILE);
+    test.storeTrainModel();
+    
+    #test = TemplateFetchServiceSingleton();
+    #test.uploadTrainModel();
+    #ret = test.fetchTemplate('大话西游帮我放');
+    #print(ret);
