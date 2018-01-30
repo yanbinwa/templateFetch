@@ -5,6 +5,7 @@ import requests
 from HelloWorld.service import TemplateFetchServiceSingleton
 import HelloWorld.constants as Constants
 from HelloWorld.config import Config
+from HelloWorld.utils import TemplateHelper
 
 config = Config();
 TEMPLATE_FILE_DIR = config.getProperties(Constants.TEMPLATE_FILE_DIR_KEY) + '/'; 
@@ -13,6 +14,7 @@ APPID = config.getProperties(Constants.APPID_KEY);
 NLU_URL = config.getProperties(Constants.NLU_ULR_KEY);
 TEST_INPUT_FILE = TEMPLATE_FILE_DIR + config.getProperties(Constants.TEST_INPUT_FILE_KEY);
 TEST_OUTPUT_FILE = TEMPLATE_FILE_DIR + config.getProperties(Constants.TEST_OUTPUT_FILE_KEY);
+TEST_CASE_OUTPUT_FILE = TEMPLATE_FILE_DIR + config.getProperties(Constants.TEST_CASE_OUTPUT_FILE_KEY);
 
 class Test:
     
@@ -25,18 +27,9 @@ class Test:
         table = data.sheet_by_index(0);
         names = [];
         sentences = [];
-        for i in range(1, table.nrows):
-            domain = table.cell(i, 2).value;
-            intent = table.cell(i, 3).value;
-            if domain != 'VIDEO' or intent != 'QUERY':
-                continue;
-            result = table.cell(i, 4).value;
-            name = self.getName(result);
-            if name is None:
-                continue;
-            sentence = table.cell(i, 5).value;
-            names.append(name);
-            sentences.append(sentence);
+        for i in range(0, table.nrows):
+            names = table.cell(i, 0).value;
+            sentences = table.cell(i, 1).value;
         
         workbook = xlwt.Workbook(encoding = 'utf-8');
         worksheet = workbook.add_sheet('template', cell_overwrite_ok = True);
@@ -66,7 +59,7 @@ class Test:
             worksheet.write(i, 2, name);
             worksheet.write(i, 3, newName);
             worksheet.write(i, 4, tag);
-        workbook.save(TEST_OUTPUT_FILE);
+        workbook.save(TEST_CASE_OUTPUT_FILE);
     
     #需要调用nlu，确保name是在词库中的    
 #     def createTestLog(self, fileName):
@@ -112,7 +105,7 @@ class Test:
 #         workbook.save(TEST_OUTPUT_FILE);
         
     #需要调用nlu，确保name是在词库中的    
-    def createTestLog(self, fileName):
+    def createTestLog(self, fileName, domainTag, intentTag, nameEntityTag):
         data = xlrd.open_workbook(fileName);
         table = data.sheet_by_index(0);
         names = [];
@@ -120,7 +113,7 @@ class Test:
         for i in range(1, table.nrows):
             domain = table.cell(i, 2).value;
             intent = table.cell(i, 3).value;
-            if domain != 'VIDEO' or intent != 'QUERY':
+            if domain != domainTag or intent != intentTag:
                 continue;
             result = table.cell(i, 4).value;
             name = self.getName(result);
@@ -134,13 +127,13 @@ class Test:
             nameEntities = jsonObj[0].get('namedEntities') if 'namedEntities' in jsonObj[0] else '';
             if nameEntities == '':
                 continue;
-            startIndex = nameEntities.index('<START:MOVIE>') if '<START:MOVIE>' in nameEntities else -1;
+            startIndex = nameEntities.index(nameEntityTag) if nameEntityTag in nameEntities else -1;
             if (startIndex < 0):
                 continue;
             endIndex = nameEntities.index('<END>');
             if (endIndex < 0):
                 continue;
-            nameTmp = nameEntities[startIndex + len('<START:MOVIE>'): endIndex];
+            nameTmp = nameEntities[startIndex + len(nameEntityTag): endIndex];
             if nameTmp == name:
                 names.append(name);
                 sentences.append(sentence);
@@ -173,4 +166,5 @@ class Test:
         
 if __name__ == "__main__":
     test = Test();
-    test.createTestLog(TEST_INPUT_FILE);
+    #test.createTestLog(TEST_INPUT_FILE, 'VIDEO', 'QUERY', TemplateHelper.NAME_ENTITY_MOVIE_TAG);
+    test.createTestLog(TEST_INPUT_FILE, 'MUSIC', 'QUERY', TemplateHelper.NAME_ENTITY_MUSIC_TAG);

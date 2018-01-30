@@ -14,6 +14,7 @@ from HelloWorld.config import Config
 #import requests
 #import json
 import jieba
+from HelloWorld.utils import TemplateHelper;
 
 config = Config();
 JAVA_LIB_PATH = config.getProperties(Constants.JAVA_JAR_LIB_DIR_KEY);
@@ -25,6 +26,8 @@ HANLP_LIB = config.getProperties(Constants.HANLP_JAR_KEY);
 TEMPLATE_FILE_DIR = config.getProperties(Constants.TEMPLATE_FILE_DIR_KEY) + '/'; 
 MODEL_FILE = TEMPLATE_FILE_DIR + config.getProperties(Constants.TRAIN_MODEL_FILE_KEY);
 TEMPLATE_OUTPUT_FILE = TEMPLATE_FILE_DIR + config.getProperties(Constants.TEMPLATE_OUTPUT_FILE_KEY);
+
+TAG_MAP = TemplateHelper.TAG_MAP;
 
 class TemplateFetchServiceSingleton:
     
@@ -194,8 +197,14 @@ class TemplateFetchServiceSingleton:
     def segment(self, sentence):
         try:
             ret = [];
+            #现将一些tag提取出来，之后分词
+            for tag in TAG_MAP.keys():
+                if sentence.find(tag) >= 0:
+                    sentence = sentence.replace(tag, ' ');
+                    ret.append(tag);
             for word in jieba.cut(sentence, cut_all=False, HMM=True):
-                ret.append(word);
+                if word.strip() != '':
+                    ret.append(word);
             return ret;
         except:
             return None;
